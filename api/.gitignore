@@ -1,2 +1,4 @@
 pyenv
 metadata.csv
+__pycache__
+bookmark.txt

@@ -6,6 +6,7 @@ import requests
 import search_engine
 import json
 from flask_cors import CORS
+import bookmark
 
 app = Flask(__name__)
 CORS(app)
@@ -47,6 +48,41 @@ def search_metadata():
 
         return app.response_class(
             response=json.dumps(json_response),
+            status=200,
+            mimetype='application/json')
+    except Exception as error:
+        return app.response_class(
+            response=json.dumps({'message': f'Unexpected error: {error}'}),
+            status=500,
+            mimetype='application/json')
+
+
+@app.route('/bookmark', methods = ['POST', 'GET'])
+def bookmarks():
+    try:
+        if request.method == 'POST':
+            payload = request.get_json()
+
+            if not payload:
+                return app.response_class(
+                    response=json.dumps({'message': 'empty bookmark payload'}),
+                    status=422,
+                    mimetype='application/json')
+
+            persist_error = bookmark.persist_bookmark(payload)
+
+            if persist_error:
+                return app.response_class(
+                    response=json.dumps({'message': persist_error}),
+                    status=422,
+                    mimetype='application/json')
+            
+            return 'saved'
+        
+        bookmarks_list = bookmark.get_bookmarks_list()
+
+        return app.response_class(
+            response=json.dumps(bookmarks_list),
             status=200,
             mimetype='application/json')
     except Exception as error:
