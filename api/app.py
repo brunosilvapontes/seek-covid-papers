@@ -5,8 +5,10 @@ import shutil
 import requests
 import search_engine
 import json
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
 
 metadata_file_name = 'metadata.csv'
 if not exists(metadata_file_name):
