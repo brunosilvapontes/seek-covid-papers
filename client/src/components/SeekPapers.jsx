@@ -28,6 +28,30 @@ const SeekPapers = () => {
     setSearchTerm(value);
   };
 
+  const saveBookmark = async (key) => {
+    if (!papers || !papers.papers || !papers.papers[key]) {
+      alert('Paper not found in order to add it in bookmarks')
+    }
+
+    const bookmark = {
+      title: papers.papers[key].title,
+      publish_time: papers.papers[key].publish_time,
+      authors: papers.papers[key].authors,
+      journal: papers.papers[key].journal,
+      url: papers.papers[key].url,
+    };
+
+    try {
+      await axios.post(`${host}/bookmark`, bookmark)
+      alert('Bookmark saved successfully')
+    } catch (err) {
+      const errMsg = err.response && err.response.data && err.response.data.message 
+        ? err.response.data.message
+        : err.message;
+      alert(errMsg);
+    }
+  };
+
   return (
     <div className="App">
       <nav>
@@ -68,6 +92,9 @@ const SeekPapers = () => {
               <td>{foundPaper.journal}</td>
               <td>{foundPaper.authors}</td>
               <td>{foundPaper.url}</td>
+              <td>
+                <button onClick={() => saveBookmark(key)}>Save in bookmarks</button>
+              </td>
             </tr>
           )) : ''}
         </tbody>
